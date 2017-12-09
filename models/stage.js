@@ -1,7 +1,7 @@
 import mongoose from 'mongoose'
 
 const StageSchema = mongoose.Schema({
-  team: { type: mongoose.Schema.Types.ObjectId, ref: 'Teams' },
+  user: { type: mongoose.Schema.Types.ObjectId, ref: 'Users' },
   number: {type : Number, default: 0},
   points: {type : Number, default: 0},
   time: {type : Number, default: 0},

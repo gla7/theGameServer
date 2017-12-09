@@ -12,6 +12,6 @@ export default function (app) {
   app.get('/', homepage)
   app.get('/loggedIn', requireAuth, authentication.loggedIn)
   //posts
-  app.post('/createTeam', authentication.createTeam)
+  app.post('/createUser', authentication.createUser)
   app.post('/signIn', requireSignIn, authentication.signIn)
 }

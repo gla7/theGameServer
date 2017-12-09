@@ -1,7 +1,7 @@
 import mongoose from 'mongoose'
 import bcrypt from 'bcrypt-nodejs'
 
-const TeamSchema = mongoose.Schema({
+const UserSchema = mongoose.Schema({
 	name: {type : String, unique : true, required : true},
   password: {type : String, required : true},
   gameOneStages: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Stages' }],
@@ -12,29 +12,29 @@ const TeamSchema = mongoose.Schema({
 })
 
 // before save, encrypt pw
-TeamSchema.pre('save', function(next) {
-  // get team model
-  const team = this
+UserSchema.pre('save', function(next) {
+  // get user model
+  const user = this
   // generate salt
   bcrypt.genSalt(10, (err, salt) => {
     if (err) { return next(err) }
     // encrypt pw using generated salt in this callback (after salt is generated)
-    bcrypt.hash(team.password, salt, null, (err, hash) => {
+    bcrypt.hash(user.password, salt, null, (err, hash) => {
       if (err) { return next(err) }
       // replace pw with encrypted pw
-      team.password = hash
+      user.password = hash
       next()
     })
   })
 })
 
-TeamSchema.methods.comparePassword = function (candidatePassword, callback) {
+UserSchema.methods.comparePassword = function (candidatePassword, callback) {
   bcrypt.compare(candidatePassword, this.password, (err, isMatch) => {
     if (err) { return callback(err) }
     callback(null, isMatch)
   })
 }
 
-const Team = mongoose.model('Team', TeamSchema)
+const User = mongoose.model('User', UserSchema)
 
-export default Team
+export default User
