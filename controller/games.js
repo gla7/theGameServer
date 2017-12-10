@@ -13,7 +13,7 @@ function create (req, res, next) {
     newGame.author = req.user
     newGame.save((err, game) => {
       if (err) { return next(err) }
-      res.send('created a game! here is the user: ' + req.user + ' and game: ' + game)
+      res.send(game)
     })
   })
 }
@@ -24,8 +24,15 @@ function edit (req, res, next) {
 }
 
 function destroy (req, res, next) {
-  // TODO: build out this function
-  res.send('xD /destroyGame ' + req.user + ', ' + JSON.stringify(req.params, null, 4))
+  Game.findOne({ name: req.params.name, author: req.user }, (err, game) => {
+    if (err) { return next(err) }
+    game.remove((err) => {
+      if (err) {
+        return next(err)
+      }
+      res.send('Success')
+    })
+  })
 }
 
 export default {

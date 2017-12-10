@@ -13,11 +13,17 @@ const GameSchema = mongoose.Schema({
   requirements: { type: String, default: '' },
 })
 
-// before save, save the game id in user document
-GameSchema.pre('save', function(next) {
-  // get game model
-  const game = this
+// after save, save the game id in user document
+GameSchema.post('save', (game, next) => {
   User.update({ _id: game.author }, { '$push': { 'gamesCreated': game } }, (err, user) => {
+    if (err) { return next(err) }
+    next()
+  })
+})
+
+// after destroy, remove the game id from user document
+GameSchema.post('remove', (game, next) => {
+  User.update({ _id: game.author }, { '$pull': { 'gamesCreated': game._id } }, (err, user) => {
     if (err) { return next(err) }
     next()
   })
