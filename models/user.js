@@ -2,13 +2,14 @@ import mongoose from 'mongoose'
 import bcrypt from 'bcrypt-nodejs'
 
 const UserSchema = mongoose.Schema({
-	name: {type : String, unique : true, required : true},
-  password: {type : String, required : true},
-  gameOneStages: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Stages' }],
-  gameTwoStages: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Stages' }],
-  gameThreeStages: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Stages' }],
-  score: {type : Number, default: 0},
-  finalized: {type : Boolean, default: false},
+	name: { type: String, unique: true, required: true },
+  email: { type: String, unique:true, required: true },
+  password: { type: String, required : true },
+  averageTeamScore: { type: Number, default: 0 },
+  gamesCreated: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Games' }],
+  stagesCreated: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Stages' }],
+  gamesInProgress: [{ type: mongoose.Schema.Types.ObjectId, ref: 'GameInstances' }],
+  gamesFinished: [{ type: mongoose.Schema.Types.ObjectId, ref: 'GameInstances' }],
 })
 
 // before save, encrypt pw

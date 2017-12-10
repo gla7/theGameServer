@@ -1,12 +1,16 @@
 import mongoose from 'mongoose'
 
 const StageSchema = mongoose.Schema({
-  user: { type: mongoose.Schema.Types.ObjectId, ref: 'Users' },
-  number: {type : Number, default: 0},
-  points: {type : Number, default: 0},
-  time: {type : Number, default: 0},
-  hints: {type : Number, default: 0},
-  success: {type : Boolean, default: false},
+  name: { type: String, unique: true, required: true },
+  author: { type: mongoose.Schema.Types.ObjectId, ref: 'Users' },
+  content: { type: String, required: true },
+  instructions: { type: String, required: true },
+  hints: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Hints' }],
+  answer: { type: String, required: true },
+  timeUntilOneTenthDeduction: { type: Number, default: -1 },
+  requirements: { type: String },
+  percentageDeductionPerWrongAnswer: { type: Number, default: 0 },
+  ratings: [{ type: Object }],
 })
 
 const Stage = mongoose.model('Stage', StageSchema)

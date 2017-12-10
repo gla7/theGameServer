@@ -5,7 +5,7 @@ import passportService from '../services/passport'
 import User from '../models/user'
 
 function loggedIn (req, res) {
-  res.send('You are logged in!!!')
+  res.send('You are logged in!!!' + req.user)
 }
 
 // jwt token setup
@@ -16,7 +16,7 @@ function tokenForUser  (user) {
 }
 
 function createUser (req, res, next) {
-  if (!req.body.name || !req.body.password) { return res.status(422).send({ error: 'You must provide user name and password!' }) }
+  if (!req.body.name || !req.body.password || !req.body.email) { return res.status(422).send({ error: 'You must provide user name, email, and password!' }) }
   User.findOne({ name: req.body.name }, (err, user) => {
     if (err) {
       return next(err)
