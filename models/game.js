@@ -1,7 +1,6 @@
 import mongoose from 'mongoose'
-//testing
 import User from './user'
-//testing
+import Stage from './stage'
 
 const GameSchema = mongoose.Schema({
   name: { type: String, unique: true, required: true },
@@ -23,9 +22,16 @@ GameSchema.post('save', (game, next) => {
 
 // after destroy, remove the game id from user document
 GameSchema.post('remove', (game, next) => {
+  // TODO: when we delete a game, we must replace the corresponding id in gameInstances with a symbol that
+  // denotes 'deleted by author'
   User.update({ _id: game.author }, { '$pull': { 'gamesCreated': game._id } }, (err, user) => {
     if (err) { return next(err) }
-    next()
+    Stage.update({ createdThroughGame: game }, { '$set': { 'createdThroughGame': null } }, { multi: true }, (err, stage) => {
+      if (err) {
+        return next(err)
+      }
+      next()
+    })
   })
 })
 

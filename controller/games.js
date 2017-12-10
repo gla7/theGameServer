@@ -11,9 +11,9 @@ function create (req, res, next) {
     if (game) { return res.status(422).send({ error: 'This game name already exists!' }) }
     const newGame = new Game(req.body)
     newGame.author = req.user
-    newGame.save((err, game) => {
+    newGame.save((err, newGame) => {
       if (err) { return next(err) }
-      res.send(game)
+      res.send(newGame)
     })
   })
 }
@@ -26,12 +26,16 @@ function edit (req, res, next) {
 function destroy (req, res, next) {
   Game.findOne({ name: req.params.name, author: req.user }, (err, game) => {
     if (err) { return next(err) }
-    game.remove((err) => {
-      if (err) {
-        return next(err)
-      }
-      res.send('Success')
-    })
+    if (game) {
+      game.remove((err) => {
+        if (err) {
+          return next(err)
+        }
+        res.send('Success')
+      })
+    } else {
+      res.send('No matching games were found!')
+    }
   })
 }
 
