@@ -11,7 +11,7 @@ import mongoose from 'mongoose'
 import router from './router'
 
 // mongo connection to DB
-mongoose.connect(process.env.DATABASE_URL || 'mongodb://localhost/theGame')
+mongoose.connect(process.env.TEST_DATABASE_URL || 'mongodb://localhost/theGameTestDatabase')
 
 // express instantiation and settings
 const app = express()
@@ -26,10 +26,10 @@ app.use(express.static(__dirname))
 router(app)
 
 // server listening on port
-const port = process.env.PORT || 3000
+const port = process.env.TEST_PORT || 6000
 
-app.listen(port, () => {
-	console.log("Your server is up at port ", port)
+const testServer = app.listen(port, () => {
+	console.log("Your test server is up at port ", port)
 })
 
-export default { app }
+export default { app, testServer }
