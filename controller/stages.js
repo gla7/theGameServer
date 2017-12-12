@@ -10,23 +10,23 @@ function create (req, res, next) {
   Stage.findOne({ name: req.body.name }, (err, stage) => {
     if (err) { return next(err) }
     if (stage) { return res.status(422).send({ error: 'This stage name already exists!' }) }
-    Game.findById(req.body.createdThroughGame, (err, game) => {
-      if (err) {
+    Game.findById(req.body.createdThroughGame, (errGame, game) => {
+      if (errGame) {
         return res.send('An error occurred! Please check your payload!')
       }
       if (game) {
         const newStage = new Stage(req.body)
         newStage.author = req.user
-        newStage.save((err, newStage) => {
-          if (err) { return next(err) }
+        newStage.save((errStage, newStage) => {
+          if (errStage) { return next(errStage) }
           res.send(newStage)
         })
       } else {
         req.body.createdThroughGame = null
         const newStage = new Stage(req.body)
         newStage.author = req.user
-        newStage.save((err, newStage) => {
-          if (err) { return next(err) }
+        newStage.save((errStage, newStage) => {
+          if (errStage) { return next(errStage) }
           res.send(newStage)
         })
       }

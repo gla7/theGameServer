@@ -26,9 +26,9 @@ GameSchema.post('remove', (game, next) => {
   // denotes 'deleted by author'
   User.update({ _id: game.author }, { '$pull': { 'gamesCreated': game._id } }, (err, user) => {
     if (err) { return next(err) }
-    Stage.update({ createdThroughGame: game }, { '$set': { 'createdThroughGame': null } }, { multi: true }, (err, stage) => {
-      if (err) {
-        return next(err)
+    Stage.update({ createdThroughGame: game }, { '$set': { 'createdThroughGame': null } }, { multi: true }, (errStage, stage) => {
+      if (errStage) {
+        return next(errStage)
       }
       next()
     })

@@ -25,8 +25,8 @@ function createUser (req, res, next) {
       return res.status(422).send({ error: 'This user name already exists!' })
     }
     const newUser = new User(req.body)
-    newUser.save((err, user) => {
-      if (err) { return next(err) }
+    newUser.save((errUser, user) => {
+      if (errUser) { return next(errUser) }
       res.json({ token: tokenForUser(user) })
     })
   })

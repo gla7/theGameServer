@@ -20,8 +20,8 @@ UserSchema.pre('save', function(next) {
   bcrypt.genSalt(10, (err, salt) => {
     if (err) { return next(err) }
     // encrypt pw using generated salt in this callback (after salt is generated)
-    bcrypt.hash(user.password, salt, null, (err, hash) => {
-      if (err) { return next(err) }
+    bcrypt.hash(user.password, salt, null, (errHash, hash) => {
+      if (errHash) { return next(errHash) }
       // replace pw with encrypted pw
       user.password = hash
       next()

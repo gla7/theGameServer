@@ -11,7 +11,7 @@ const StageSchema = mongoose.Schema({
   hints: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Hints' }],
   answer: { type: String, required: true },
   timeUntilOneTenthDeduction: { type: Number, default: -1 },
-  requirements: { type: String },
+  requirements: { type: String, default: 'Please refer to the instructions.' },
   percentageDeductionPerWrongAnswer: { type: Number, default: 0 },
   ratings: [{ type: Object }],
 })
@@ -21,8 +21,8 @@ StageSchema.post('save', (stage, next) => {
   User.update({ _id: stage.author }, { '$push': { 'stagesCreated': stage } }, (err, user) => {
     if (err) { return next(err) }
     if (stage.createdThroughGame) {
-      Game.update({ _id: stage.createdThroughGame }, { '$push': { 'stages': stage } }, (err, game) => {
-        if (err) { return next(err) }
+      Game.update({ _id: stage.createdThroughGame }, { '$push': { 'stages': stage } }, (errGame, game) => {
+        if (errGame) { return next(errGame) }
         next()
       })
     } else {

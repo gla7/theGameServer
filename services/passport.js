@@ -14,8 +14,8 @@ const localLogin = new LocalStrategy({ usernameField: 'name' }, (name, password,
     if (err) { return done(err) }
     if (!user) { return done(null, false) }
     // compare pw's
-    user.comparePassword(password, (err, isMatch) => {
-      if (err) { return done(err) }
+    user.comparePassword(password, (errUser, isMatch) => {
+      if (errUser) { return done(errUser) }
       if (!isMatch) { return done(null, false) }
       return done(null, user)
     })
