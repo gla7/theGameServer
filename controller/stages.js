@@ -40,8 +40,19 @@ function edit (req, res, next) {
 }
 
 function destroy (req, res, next) {
-  // TODO: build out this function
-  res.send('xD /destroyStage ' + req.user + ', ' + JSON.stringify(req.params, null, 4))
+  Stage.findOne({ name: req.params.name }, (err, stage) => {
+    if (err) { return next(err) }
+    if (stage) {
+      stage.remove((errStage) => {
+        if (errStage) {
+          return next(errStage)
+        }
+        res.send('Success')
+      })
+    } else {
+      res.send('No matching stages were found!')
+    }
+  })
 }
 
 export default {
