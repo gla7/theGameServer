@@ -130,7 +130,7 @@ function createsIfAllGoodWithGame (app, token, done) {
     chai.request(app)
     .post('/createStage')
     .set('Authorization', token)
-    .send({ name: 'stageTestXXX', content: 'test content', instructions: 'test instructions', answer: 'test answer', createdThroughGame: games[0] })
+    .send({ name: 'stageTestWithGame', content: 'test content', instructions: 'test instructions', answer: 'test answer', createdThroughGame: games[0] })
     .end((err, res) => {
       User.find({ name: 'test' }, (errUser, users) => {
         Game.find({ name: 'gameTest' }, (errGame, updatedGames) => {
@@ -148,22 +148,79 @@ function createsIfAllGoodWithGame (app, token, done) {
   })
 }
 
-function noGameRefIfGameDestroyed (app, token, done) {
-  chai.request(app)
-  .get('/destroyGame/gameTest')
-  .set('Authorization', token)
-  .end((err, res) => {
-    User.find({ name: 'test' }, (errUser, users) => {
+function destroysWithNoTraceGameIncluded (app, token, done) {
+  Stage.find({ name: 'stageTestWithGame' }, (errStage, stages) => {
+    chai.request(app)
+    .get('/destroyStage/stageTestWithGame')
+    .set('Authorization', token)
+    .end((err, res) => {
       Game.find({ name: 'gameTest' }, (errGame, games) => {
-        Stage.findById(users[0].stagesCreated[1], (errStage, stage) => {
-          users[0].gamesCreated.length.should.equal(0)
-          games.length.should.equal(0)
-          should.equal(stage.createdThroughGame, null)
-          res.should.have.status(200)
-          res.text.should.equal('Success')
-          done()
+        User.find({ name: 'test' }, (errUser, users) => {
+          Stage.find({ name: 'stageTestWithGame' }, (errUpdatedStage, updatedStages) => {
+            updatedStages.length.should.equal(0)
+            games[0].stages.length.should.equal(0)
+            users[0].stagesCreated[users[0].stagesCreated.length - 1].toString().should.not.equal(stages[0]._id.toString())
+            res.should.have.status(200)
+            done()
+          })
         })
       })
+    })
+  })
+}
+
+function noGameRefIfGameDestroyed (app, token, done) {
+  Game.find({ name: 'gameTest' }, (errGame, games) => {
+    chai.request(app)
+    .post('/createStage')
+    .set('Authorization', token)
+    .send({ name: 'stageTestWithGame', content: 'test content', instructions: 'test instructions', answer: 'test answer', createdThroughGame: games[0] })
+    .end((errFirstRequest, resFirstRequest) => {
+      chai.request(app)
+      .get('/destroyGame/gameTest')
+      .set('Authorization', token)
+      .end((errSecondRequest, resSecondRequest) => {
+        User.find({ name: 'test' }, (errUser, users) => {
+          Game.find({ name: 'gameTest' }, (errUpdatedGame, updatedGames) => {
+            Stage.findById(users[0].stagesCreated[1], (errStage, stage) => {
+              users[0].gamesCreated.length.should.equal(0)
+              updatedGames.length.should.equal(0)
+              should.equal(stage.createdThroughGame, null)
+              resSecondRequest.should.have.status(200)
+              resSecondRequest.text.should.equal('Success')
+              done()
+            })
+          })
+        })
+      })
+    })
+  })
+}
+
+function cannotDestroyIfNone (app, token, done) {
+  chai.request(app)
+  .get('/destroyStage/nonExistentStageName')
+  .set('Authorization', token)
+  .end((err, res) => {
+    Stage.find({ name: 'stageTest' }, (errStage, stages) => {
+      should.equal(err, null)
+      stages.length.should.equal(1)
+      res.should.have.status(200)
+      done()
+    })
+  })
+}
+
+function cannotDestroyWithBadToken (app, done) {
+  chai.request(app)
+  .get('/destroyStage/stageTest')
+  .set('Authorization', 'badToken')
+  .end((err, res) => {
+    Stage.find({ name: 'stageTest' }, (errStage, stages) => {
+      stages.length.should.equal(1)
+      err.response.text.should.equal('Unauthorized')
+      res.should.have.status(401)
+      done()
     })
   })
 }
@@ -177,5 +234,8 @@ export default {
   cannotCreateIfNoAnswer,
   createsIfAllGoodNoGame,
   createsIfAllGoodWithGame,
+  destroysWithNoTraceGameIncluded,
   noGameRefIfGameDestroyed,
+  cannotDestroyIfNone,
+  cannotDestroyWithBadToken,
 }

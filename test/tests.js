@@ -107,7 +107,10 @@ describe('ALL TESTS:', () => {
     it('Cannot create without answer', done => { stage.cannotCreateIfNoAnswer(app, token, done) })
     it('Creates if all is good, and the user gets authorship for it, but not a game', done => { stage.createsIfAllGoodNoGame(app, token, done) })
     it('Creates if all is good, and the user gets authorship for it, and added to game', done => { stage.createsIfAllGoodWithGame(app, token, done) })
+    it('Destroys if all is good, and reflects this in the author and game', done => { stage.destroysWithNoTraceGameIncluded(app, token, done) })
     it('Removes game ref if game is destroyed', done => { stage.noGameRefIfGameDestroyed(app, token, done) })
+    it('Cannot destroy if name does not exist', done => { stage.cannotDestroyIfNone(app, token, done) })
+    it('Cannot destroy with a bad token', done => { stage.cannotDestroyWithBadToken(app, done) })
   })
 
   describe('DB TESTS:', () => {
