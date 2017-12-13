@@ -1,6 +1,7 @@
 import mongoose from 'mongoose'
 import User from './user'
 import Game from './game'
+import Hint from './hint'
 
 const StageSchema = mongoose.Schema({
   name: { type: String, unique: true, required: true },
@@ -34,16 +35,22 @@ StageSchema.post('save', (stage, next) => {
 // after destroy, remove the stage id from user document and game document if applicable
 StageSchema.post('remove', (stage, next) => {
   // TODO: when we delete a stage, we must replace the corresponding id in gameInstances and stageInstances with a symbol that
-  // denotes 'deleted by author', also we must delete the associated hints altogether
+  // denotes 'deleted by author'
   User.update({ _id: stage.author }, { '$pull': { 'stagesCreated': stage._id } }, (err, user) => {
     if (err) { return next(err) }
     if (stage.createdThroughGame) {
       Game.update({ stages: stage }, { '$pull': { 'stages': stage._id } }, { multi: true }, (errGame, game) => {
         if (errGame) { return next(errGame) }
-        next()
+        Hint.remove({ stage }, (errHint, hint) => {
+          if (errHint) { return next(errHint) }
+          next()
+        })
       })
     } else {
-      next()
+      Hint.remove({ stage }, (errHint, hint) => {
+        if (errHint) { return next(errHint) }
+        next()
+      })
     }
   })
 })

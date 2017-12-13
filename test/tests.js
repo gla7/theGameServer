@@ -10,6 +10,7 @@ import home from './homepage'
 import auth from './authentication'
 import game from './game'
 import stage from './stage'
+import hint from './hint'
 
 // chai tools
 const expect = chai.expect
@@ -111,6 +112,19 @@ describe('ALL TESTS:', () => {
     it('Removes game ref if game is destroyed', done => { stage.noGameRefIfGameDestroyed(app, token, done) })
     it('Cannot destroy if name does not exist', done => { stage.cannotDestroyIfNone(app, token, done) })
     it('Cannot destroy with a bad token', done => { stage.cannotDestroyWithBadToken(app, done) })
+  })
+
+  describe('HINT TESTS:', () => {
+    it('Cannot create without login', done => { hint.cannotCreateIfLoggedOut(app, done) })
+    it('Cannot create with a bad token', done => { hint.cannotCreateWithBadToken(app, done) })
+    it('Cannot create without a stage', done => { hint.cannotCreateIfNoStage(app, token, done) })
+    it('Cannot create without a text', done => { hint.cannotCreateIfNoText(app, token, done) })
+    it('Cannot create with a bad stage', done => { hint.cannotCreateWithBadStage(app, token, done) })
+    it('Creates if all is good, and the stage gets credit', done => { hint.createsIfAllGood(app, token, done) })
+    it('Cannot destroy if id does not exist', done => { hint.cannotDestroyIfNone(app, token, done) })
+    it('Cannot destroy with a bad token', done => { hint.cannotDestroyWithBadToken(app, done) })
+    it('Destroys if all is good, and reflects this in the stage', done => { hint.destroysWithNoTrace(app, token, done) })
+    it('Destroys hint if associated stage is destroyed', done => { hint.noHintIfStageDestroyed(app, token, done) })
   })
 
   describe('DB TESTS:', () => {
