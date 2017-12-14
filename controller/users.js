@@ -1,13 +1,13 @@
 import User from '../models/user'
 
-function load (req, res, next) {
+function read (req, res, next) {
   // TODO: build out this function
-  res.send('xD /loadUser ' + req.user + ', ' + JSON.stringify(req.params, null, 4))
+  res.send('xD /readUser ' + req.user + ', ' + JSON.stringify(req.params, null, 4))
 }
 
-function edit (req, res, next) {
+function update (req, res, next) {
   // TODO: build out this function
-  res.send('xD /editUser ' + req.user + ', ' + JSON.stringify(req.body, null, 4))
+  res.send('xD /updateUser ' + req.user + ', ' + JSON.stringify(req.body, null, 4))
 }
 
 function destroy (req, res, next) {
@@ -16,7 +16,7 @@ function destroy (req, res, next) {
 }
 
 export default {
-  load,
-  edit,
+  read,
+  update,
   destroy,
 }

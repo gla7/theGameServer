@@ -1,8 +1,8 @@
 import Game from '../models/game'
 
-function load (req, res, next) {
+function read (req, res, next) {
   // TODO: build out this function
-  res.send('xD /loadGame ' + req.user + ', ' + JSON.stringify(req.params, null, 4))
+  res.send('xD /readGame ' + req.user + ', ' + JSON.stringify(req.params, null, 4))
 }
 
 function create (req, res, next) {
@@ -18,9 +18,9 @@ function create (req, res, next) {
   })
 }
 
-function edit (req, res, next) {
+function update (req, res, next) {
   // TODO: build out this function
-  res.send('xD /editGame ' + req.user + ', ' + JSON.stringify(req.body, null, 4))
+  res.send('xD /updateGame ' + req.user + ', ' + JSON.stringify(req.body, null, 4))
 }
 
 function destroy (req, res, next) {
@@ -40,8 +40,8 @@ function destroy (req, res, next) {
 }
 
 export default {
-  load,
+  read,
   create,
-  edit,
+  update,
   destroy,
 }

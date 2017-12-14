@@ -1,9 +1,9 @@
 import Stage from '../models/stage'
 import Game from '../models/game'
 
-function load (req, res, next) {
+function read (req, res, next) {
   // TODO: build out this function
-  res.send('xD /loadStage ' + req.user + ', ' + JSON.stringify(req.params, null, 4))
+  res.send('xD /readStage ' + req.user + ', ' + JSON.stringify(req.params, null, 4))
 }
 
 function create (req, res, next) {
@@ -34,9 +34,9 @@ function create (req, res, next) {
   })
 }
 
-function edit (req, res, next) {
+function update (req, res, next) {
   // TODO: build out this function
-  res.send('xD /editStage ' + req.user + ', ' + JSON.stringify(req.body, null, 4))
+  res.send('xD /updateStage ' + req.user + ', ' + JSON.stringify(req.body, null, 4))
 }
 
 function destroy (req, res, next) {
@@ -56,8 +56,8 @@ function destroy (req, res, next) {
 }
 
 export default {
-  load,
+  read,
   create,
-  edit,
+  update,
   destroy,
 }

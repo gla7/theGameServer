@@ -1,8 +1,8 @@
 import StageInstance from '../models/stageInstance'
 
-function load (req, res, next) {
+function read (req, res, next) {
   // TODO: build out this function
-  res.send('xD /loadStageInstance ' + req.user + ', ' + JSON.stringify(req.params, null, 4))
+  res.send('xD /readStageInstance ' + req.user + ', ' + JSON.stringify(req.params, null, 4))
 }
 
 function create (req, res, next) {
@@ -10,9 +10,9 @@ function create (req, res, next) {
   res.send('xD /createStageInstance ' + req.user + ', ' + JSON.stringify(req.body, null, 4))
 }
 
-function edit (req, res, next) {
+function update (req, res, next) {
   // TODO: build out this function
-  res.send('xD /editStageInstance ' + req.user + ', ' + JSON.stringify(req.body, null, 4))
+  res.send('xD /updateStageInstance ' + req.user + ', ' + JSON.stringify(req.body, null, 4))
 }
 
 function destroy (req, res, next) {
@@ -21,8 +21,8 @@ function destroy (req, res, next) {
 }
 
 export default {
-  load,
+  read,
   create,
-  edit,
+  update,
   destroy,
 }

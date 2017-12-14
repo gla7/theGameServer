@@ -20,22 +20,22 @@ export default function (app) {
   // authentication
   app.get('/loggedIn', requireAuth, authentication.loggedIn)
   // games
-  app.get('/loadGame/:name', requireAuth, games.load)
+  app.get('/readGame/:name', requireAuth, games.read)
   app.get('/destroyGame/:name', requireAuth, games.destroy)
   // stages
-  app.get('/loadStage/:name', requireAuth, stages.load)
+  app.get('/readStage/:name', requireAuth, stages.read)
   app.get('/destroyStage/:name', requireAuth, stages.destroy)
   // gameInstances
-  app.get('/loadGameInstance/:id', requireAuth, gameInstances.load)
+  app.get('/readGameInstance/:id', requireAuth, gameInstances.read)
   app.get('/destroyGameInstance/:id', requireAuth, gameInstances.destroy)
   // stageInstances
-  app.get('/loadStageInstance/:id', requireAuth, stageInstances.load)
+  app.get('/readStageInstance/:id', requireAuth, stageInstances.read)
   app.get('/destroyStageInstance/:id', requireAuth, stageInstances.destroy)
   // hints
-  app.get('/loadHint/:id', requireAuth, hints.load)
+  app.get('/readHint/:id', requireAuth, hints.read)
   app.get('/destroyHint/:id', requireAuth, hints.destroy)
   // users
-  app.get('/loadUser/:name', requireAuth, users.load)
+  app.get('/readUser/:name', requireAuth, users.read)
   app.get('/destroyUser/:name', requireAuth, users.destroy)
   // POSTs
   // authentication
@@ -43,19 +43,19 @@ export default function (app) {
   app.post('/signIn', requireSignIn, authentication.signIn)
   // games
   app.post('/createGame', requireAuth, games.create)
-  app.post('/editGame', requireAuth, games.edit)
+  app.post('/updateGame', requireAuth, games.update)
   // stages
   app.post('/createStage', requireAuth, stages.create)
-  app.post('/editStage', requireAuth, stages.edit)
+  app.post('/updateStage', requireAuth, stages.update)
   // gameInstances
   app.post('/createGameInstance', requireAuth, gameInstances.create)
-  app.post('/editGameInstance', requireAuth, gameInstances.edit)
+  app.post('/updateGameInstance', requireAuth, gameInstances.update)
   // stageInstances
   app.post('/createStageInstance', requireAuth, stageInstances.create)
-  app.post('/editStageInstance', requireAuth, stageInstances.edit)
+  app.post('/updateStageInstance', requireAuth, stageInstances.update)
   // hints
   app.post('/createHint', requireAuth, hints.create)
-  app.post('/editHint', requireAuth, hints.edit)
+  app.post('/updateHint', requireAuth, hints.update)
   // users
-  app.post('/editUser', requireAuth, users.edit)
+  app.post('/updateUser', requireAuth, users.update)
 }
