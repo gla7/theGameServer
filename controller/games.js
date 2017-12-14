@@ -24,7 +24,7 @@ function edit (req, res, next) {
 }
 
 function destroy (req, res, next) {
-  Game.findOne({ name: req.params.name, author: req.user }, (err, game) => {
+  Game.findOne({ $and: [ { name: req.params.name }, { author: req.user } ] }, (err, game) => {
     if (err) { return next(err) }
     if (game) {
       game.remove((errGame) => {

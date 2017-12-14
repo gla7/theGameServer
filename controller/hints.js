@@ -31,16 +31,24 @@ function edit (req, res, next) {
 function destroy (req, res, next) {
   Hint.findOne({ _id: req.params.id }, (err, hint) => {
     if (err) { return next(err) }
-    if (hint) {
-      hint.remove((errHint) => {
-        if (errHint) {
-          return next(errHint)
+    Stage.find({ $and: [ { author: req.user }, { hints: hint } ] }, (errStage, stages) => {
+      if (errStage) { return next(errStage) }
+      if (stages.length >= 1) {
+        if (err) { return next(err) }
+        if (hint) {
+          hint.remove((errHint) => {
+            if (errHint) {
+              return next(errHint)
+            }
+            res.send('Success')
+          })
+        } else {
+          res.send('No matching hints were found!')
         }
-        res.send('Success')
-      })
-    } else {
-      res.send('No matching hints were found!')
-    }
+      } else {
+        res.send('You do not have the permission to do this!')
+      }
+    })
   })
 }
 

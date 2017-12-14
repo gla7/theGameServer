@@ -40,7 +40,7 @@ function edit (req, res, next) {
 }
 
 function destroy (req, res, next) {
-  Stage.findOne({ name: req.params.name }, (err, stage) => {
+  Stage.findOne({ $and: [ { name: req.params.name }, { author: req.user } ] }, (err, stage) => {
     if (err) { return next(err) }
     if (stage) {
       stage.remove((errStage) => {
