@@ -1,9 +1,13 @@
 import Hint from '../models/hint'
 import Stage from '../models/stage'
 
+const IMMUTABLE_PROPERTIES = ['_id', 'stage']
+
 function read (req, res, next) {
-  // TODO: build out this function
-  res.send('xD /readHint ' + req.user + ', ' + JSON.stringify(req.params, null, 4))
+  Hint.findOne({ _id: req.params.id }, (err, hint) => {
+    if (err) { return res.send('No hints found!') }
+    res.send(hint)
+  })
 }
 
 function create (req, res, next) {
@@ -24,8 +28,26 @@ function create (req, res, next) {
 }
 
 function update (req, res, next) {
-  // TODO: build out this function
-  res.send('xD /updateHint ' + req.user + ', ' + JSON.stringify(req.body, null, 4))
+  if (!req.body._id) {
+    return res.send('Cannot update without the id!')
+  }
+  const hintId = req.body._id
+  IMMUTABLE_PROPERTIES.forEach(disallowedProp => {
+  	for (let _key in req.body) {
+  		delete req.body[disallowedProp]
+  	}
+  })
+  Stage.find({ $and: [ { author: req.user }, { hints: hintId } ] }, (errStage, stages) => {
+    if (errStage) { return next(errStage) }
+    if (stages.length >= 1) {
+      Hint.findOneAndUpdate({ "_id": hintId }, req.body, { new: true }, (err, hint) => {
+        if (err) { return res.status(500).send(err) }
+        res.send(hint)
+      })
+    } else {
+      res.send('You do not have the permission to do this!')
+    }
+  })
 }
 
 function destroy (req, res, next) {
