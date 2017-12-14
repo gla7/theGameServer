@@ -24,8 +24,8 @@ function create (req, res, next) {
 }
 
 function update (req, res, next) {
-  // // TODO: build out this function
-  // res.send('xD /updateHint ' + req.user + ', ' + JSON.stringify(req.body, null, 4))
+  // TODO: build out this function
+  res.send('xD /updateHint ' + req.user + ', ' + JSON.stringify(req.body, null, 4))
 }
 
 function destroy (req, res, next) {
