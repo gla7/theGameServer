@@ -1,8 +1,11 @@
 import Game from '../models/game'
 
 function read (req, res, next) {
-  // TODO: build out this function
-  res.send('xD /readGame ' + req.user + ', ' + JSON.stringify(req.params, null, 4))
+  Game.findOne({ name: req.params.name }, (err, game) => {
+    if (err) { return res.status(401).send(err.response) }
+    if (!game) { return res.status(200).send('No games found under that name.') }
+    res.send(game)
+  })
 }
 
 function create (req, res, next) {

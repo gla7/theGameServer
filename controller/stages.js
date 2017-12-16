@@ -2,8 +2,11 @@ import Stage from '../models/stage'
 import Game from '../models/game'
 
 function read (req, res, next) {
-  // TODO: build out this function
-  res.send('xD /readStage ' + req.user + ', ' + JSON.stringify(req.params, null, 4))
+  Stage.findOne({ name: req.params.name }, (err, stage) => {
+    if (err) { return res.status(401).send(err.response) }
+    if (!stage) { return res.status(200).send('No stages found under that name.') }
+    res.send(stage)
+  })
 }
 
 function create (req, res, next) {

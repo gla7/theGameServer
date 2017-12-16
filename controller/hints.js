@@ -5,7 +5,8 @@ const IMMUTABLE_PROPERTIES = ['_id', 'stage']
 
 function read (req, res, next) {
   Hint.findOne({ _id: req.params.id }, (err, hint) => {
-    if (err) { return res.send('No hints found!') }
+    if (err) { return res.status(401).send(err.response) }
+    if (!hint) { return res.status(200).send('No hints found under that name.') }
     res.send(hint)
   })
 }

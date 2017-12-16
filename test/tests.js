@@ -128,6 +128,9 @@ describe('ALL TESTS:', () => {
     it('Cannot update with bad token', done => { hint.cannotUpdateWithBadToken(app, token, done) })
     it('Cannot update with bad id', done => { hint.cannotUpdateWithBadId(app, token, done) })
     it('Updates if all is good', done => { hint.updatesIfAllGood(app, token, done) })
+    it('Cannot read with bad token', done => { hint.cannotReadWithBadToken(app, token, done) })
+    it('Cannot read with bad id', done => { hint.cannotReadWithNoHint(app, token, done) })
+    it('Reads if all is good', done => { hint.readsIfAllGood(app, token, done) })
   })
 
   describe('DB TESTS:', () => {

@@ -298,6 +298,68 @@ function updatesIfAllGood (app, token, done) {
   })
 }
 
+function cannotReadWithBadToken (app, token, done) {
+  chai.request(app)
+  .post('/createStage')
+  .set('Authorization', token)
+  .send({ name: 'stageToUsedForReadTests', content: 'test content', instructions: 'test instructions', answer: 'test answer' })
+  .end((errFirstRequest, resFirstRequest) => {
+    Stage.find({ name: 'stageToUsedForReadTests' }, (errStage, stages) => {
+      chai.request(app)
+      .post('/createHint')
+      .set('Authorization', token)
+      .send({ stage: stages[0], text: 'testToBeRead' })
+      .end((errSecondRequest, resSecondRequest) => {
+        Hint.find({ text: 'testToBeRead' }, (errHint, hints) => {
+          chai.request(app)
+          .get(`/readHint/${hints[0].id}`)
+          .set('Authorization', 'badToken')
+          .end((errThirdRequest, resThirdRequest) => {
+            hints.length.should.equal(1)
+            resThirdRequest.should.have.status(401)
+            errThirdRequest.response.text.should.equal('Unauthorized')
+            done()
+          })
+        })
+      })
+    })
+  })
+}
+
+function cannotReadWithNoHint (app, token, done) {
+  Hint.find({ text: 'testToBeRead' }, (errHint, hints) => {
+    chai.request(app)
+    .get(`/readHint/badId`)
+    .set('Authorization', token)
+    .end((err, res) => {
+      hints.length.should.equal(1)
+      res.should.have.status(401)
+      err.response.should.not.equal(null)
+      done()
+    })
+  })
+}
+
+function readsIfAllGood (app, token, done) {
+  Hint.find({ text: 'testToBeRead' }, (errHint, hints) => {
+    chai.request(app)
+    .get(`/readHint/${hints[0].id}`)
+    .set('Authorization', token)
+    .end((err, res) => {
+      Stage.remove({}, (errDeleteAllStages, allStages) => {
+        Hint.remove({}, (errDeleteAllHints, allHints) => {
+          hints.length.should.equal(1)
+          res.body.stage.toString().should.equal(hints[0].stage.toString())
+          res.body.text.should.equal(hints[0].text)
+          res.should.have.status(200)
+          should.equal(err, null)
+          done()
+        })
+      })
+    })
+  })
+}
+
 export default {
   cannotCreateIfLoggedOut,
   cannotCreateWithBadToken,
@@ -312,4 +374,7 @@ export default {
   cannotUpdateWithBadToken,
   cannotUpdateWithBadId,
   updatesIfAllGood,
+  cannotReadWithBadToken,
+  cannotReadWithNoHint,
+  readsIfAllGood,
 }
