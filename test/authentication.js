@@ -173,6 +173,41 @@ function updatesOnlyPermittedUserAttributes (app, token, done) {
   })
 }
 
+function cannotReadWithBadToken (app, token, done) {
+  chai.request(app)
+  .get(`/readUser/test`)
+  .set('Authorization', 'badToken')
+  .end((err, res) => {
+    res.should.have.status(401)
+    err.response.text.should.equal('Unauthorized')
+    done()
+  })
+}
+
+function cannotReadWithBadName (app, token, done) {
+  chai.request(app)
+  .get(`/readUser/badName`)
+  .set('Authorization', token)
+  .end((err, res) => {
+    res.text.should.equal('No users found under that name.')
+    res.should.have.status(200)
+    done()
+  })
+}
+
+function readsIfAllGood (app, token, done) {
+  User.findOne({ name: 'test' }, (err, user) => {
+    chai.request(app)
+    .get(`/readUser/test`)
+    .set('Authorization', token)
+    .end((err, res) => {
+      res.body.name.should.equal(user.name)
+      res.body._id.toString().should.equal(user._id.toString())
+      done()
+    })
+  })
+}
+
 export default {
   noTokenNoLogIn,
   badTokenNoLogIn,
@@ -186,4 +221,7 @@ export default {
   noSignInWithBadCreds,
   goodTokenFromSignIn,
   updatesOnlyPermittedUserAttributes,
+  cannotReadWithBadToken,
+  cannotReadWithBadName,
+  readsIfAllGood,
 }

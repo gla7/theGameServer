@@ -87,6 +87,9 @@ describe('ALL TESTS:', () => {
 
     it('Marks me logged with a token from sign in', done => { auth.goodTokenFromSignIn(app, token, done) })
     it('Updates only permitted user attributes', done => { auth.updatesOnlyPermittedUserAttributes(app, token, done) })
+    it('Cannot read with bad token', done => { auth.cannotReadWithBadToken(app, token, done) })
+    it('Cannot read with bad name', done => { auth.cannotReadWithBadName(app, token, done) })
+    it('Reads if all is good', done => { auth.readsIfAllGood(app, token, done) })
   })
 
   describe('GAME TESTS:', () => {
