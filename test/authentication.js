@@ -202,6 +202,8 @@ function readsIfAllGood (app, token, done) {
     .set('Authorization', token)
     .end((err, res) => {
       res.body.name.should.equal(user.name)
+      should.equal(res.body.email, undefined)
+      should.equal(res.body.password, undefined)
       res.body._id.toString().should.equal(user._id.toString())
       done()
     })
