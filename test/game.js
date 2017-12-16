@@ -86,7 +86,7 @@ function cannotCreateIfNameTaken (app, token, done) {
 
 function cannotDestroyIfNone (app, token, done) {
   chai.request(app)
-  .get('/destroyGame/nonExistentGameName')
+  .delete('/destroyGame/nonExistentGameName')
   .set('Authorization', token)
   .end((err, res) => {
     Game.find({ name: 'gameTest' }, (errGame, games) => {
@@ -100,7 +100,7 @@ function cannotDestroyIfNone (app, token, done) {
 
 function cannotDestroyWithBadToken (app, done) {
   chai.request(app)
-  .get('/destroyGame/gameTest')
+  .delete('/destroyGame/gameTest')
   .set('Authorization', 'badToken')
   .end((err, res) => {
     Game.find({ name: 'gameTest' }, (errGame, games) => {
@@ -114,7 +114,7 @@ function cannotDestroyWithBadToken (app, done) {
 
 function destroysIfAllGood (app, token, done) {
   chai.request(app)
-  .get('/destroyGame/gameTest')
+  .delete('/destroyGame/gameTest')
   .set('Authorization', token)
   .end((err, res) => {
     User.find({ name: 'test' }, (errUser, users) => {

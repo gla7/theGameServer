@@ -15,47 +15,34 @@ const requireSignIn = passport.authenticate('local', { session: false })
 
 export default function (app) {
   // GETs
-  // homepage
   app.get('/', homepage)
-  // authentication
   app.get('/loggedIn', requireAuth, authentication.loggedIn)
-  // games
   app.get('/readGame/:name', requireAuth, games.read)
-  app.get('/destroyGame/:name', requireAuth, games.destroy)
-  // stages
   app.get('/readStage/:name', requireAuth, stages.read)
-  app.get('/destroyStage/:name', requireAuth, stages.destroy)
-  // gameInstances
   app.get('/readGameInstance/:id', requireAuth, gameInstances.read)
-  app.get('/destroyGameInstance/:id', requireAuth, gameInstances.destroy)
-  // stageInstances
   app.get('/readStageInstance/:id', requireAuth, stageInstances.read)
-  app.get('/destroyStageInstance/:id', requireAuth, stageInstances.destroy)
-  // hints
   app.get('/readHint/:id', requireAuth, hints.read)
-  app.get('/destroyHint/:id', requireAuth, hints.destroy)
-  // users
   app.get('/readUser/:name', requireAuth, users.read)
-  app.get('/destroyUser/:name', requireAuth, users.destroy)
   // POSTs
-  // authentication
   app.post('/createUser', authentication.createUser)
   app.post('/signIn', requireSignIn, authentication.signIn)
-  // games
   app.post('/createGame', requireAuth, games.create)
-  app.post('/updateGame', requireAuth, games.update)
-  // stages
   app.post('/createStage', requireAuth, stages.create)
-  app.post('/updateStage', requireAuth, stages.update)
-  // gameInstances
   app.post('/createGameInstance', requireAuth, gameInstances.create)
-  app.post('/updateGameInstance', requireAuth, gameInstances.update)
-  // stageInstances
   app.post('/createStageInstance', requireAuth, stageInstances.create)
-  app.post('/updateStageInstance', requireAuth, stageInstances.update)
-  // hints
   app.post('/createHint', requireAuth, hints.create)
-  app.post('/updateHint', requireAuth, hints.update)
-  // users
-  app.post('/updateUser', requireAuth, users.update)
+  // DELETEs
+  app.delete('/destroyGame/:name', requireAuth, games.destroy)
+  app.delete('/destroyStage/:name', requireAuth, stages.destroy)
+  app.delete('/destroyGameInstance/:id', requireAuth, gameInstances.destroy)
+  app.delete('/destroyStageInstance/:id', requireAuth, stageInstances.destroy)
+  app.delete('/destroyHint/:id', requireAuth, hints.destroy)
+  app.delete('/destroyUser/:name', requireAuth, users.destroy)
+  // PUTs
+  app.put('/updateGame/:name', requireAuth, games.update)
+  app.put('/updateStage/:name', requireAuth, stages.update)
+  app.put('/updateGameInstance/:id', requireAuth, gameInstances.update)
+  app.put('/updateStageInstance/:id', requireAuth, stageInstances.update)
+  app.put('/updateHint/:id', requireAuth, hints.update)
+  app.put('/updateUser/:name', requireAuth, users.update)
 }

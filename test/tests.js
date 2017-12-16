@@ -125,6 +125,9 @@ describe('ALL TESTS:', () => {
     it('Cannot destroy with a bad token', done => { hint.cannotDestroyWithBadToken(app, done) })
     it('Destroys if all is good, and reflects this in the stage', done => { hint.destroysWithNoTrace(app, token, done) })
     it('Destroys hint if associated stage is destroyed', done => { hint.noHintIfStageDestroyed(app, token, done) })
+    it('Cannot update with bad token', done => { hint.cannotUpdateWithBadToken(app, token, done) })
+    it('Cannot update with bad id', done => { hint.cannotUpdateWithBadId(app, token, done) })
+    it('Updates if all is good', done => { hint.updatesIfAllGood(app, token, done) })
   })
 
   describe('DB TESTS:', () => {

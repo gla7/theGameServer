@@ -151,7 +151,7 @@ function createsIfAllGoodWithGame (app, token, done) {
 function destroysWithNoTraceGameIncluded (app, token, done) {
   Stage.find({ name: 'stageTestWithGame' }, (errStage, stages) => {
     chai.request(app)
-    .get('/destroyStage/stageTestWithGame')
+    .delete('/destroyStage/stageTestWithGame')
     .set('Authorization', token)
     .end((err, res) => {
       Game.find({ name: 'gameTest' }, (errGame, games) => {
@@ -177,7 +177,7 @@ function noGameRefIfGameDestroyed (app, token, done) {
     .send({ name: 'stageTestWithGame', content: 'test content', instructions: 'test instructions', answer: 'test answer', createdThroughGame: games[0] })
     .end((errFirstRequest, resFirstRequest) => {
       chai.request(app)
-      .get('/destroyGame/gameTest')
+      .delete('/destroyGame/gameTest')
       .set('Authorization', token)
       .end((errSecondRequest, resSecondRequest) => {
         User.find({ name: 'test' }, (errUser, users) => {
@@ -199,7 +199,7 @@ function noGameRefIfGameDestroyed (app, token, done) {
 
 function cannotDestroyIfNone (app, token, done) {
   chai.request(app)
-  .get('/destroyStage/nonExistentStageName')
+  .delete('/destroyStage/nonExistentStageName')
   .set('Authorization', token)
   .end((err, res) => {
     Stage.find({ name: 'stageTest' }, (errStage, stages) => {
@@ -213,7 +213,7 @@ function cannotDestroyIfNone (app, token, done) {
 
 function cannotDestroyWithBadToken (app, done) {
   chai.request(app)
-  .get('/destroyStage/stageTest')
+  .delete('/destroyStage/stageTest')
   .set('Authorization', 'badToken')
   .end((err, res) => {
     Stage.find({ name: 'stageTest' }, (errStage, stages) => {

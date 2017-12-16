@@ -28,10 +28,10 @@ function create (req, res, next) {
 }
 
 function update (req, res, next) {
-  if (!req.body._id) {
+  if (!req.params.id) {
     return res.send('Cannot update without the id!')
   }
-  const hintId = req.body._id
+  const hintId = req.params.id
   IMMUTABLE_PROPERTIES.forEach(disallowedProp => {
   	for (let _key in req.body) {
   		delete req.body[disallowedProp]

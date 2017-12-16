@@ -111,7 +111,7 @@ function createsIfAllGood (app, token, done) {
 
 function cannotDestroyIfNone (app, token, done) {
   chai.request(app)
-  .get('/destroyHint/nonExistentHintId')
+  .delete('/destroyHint/nonExistentHintId')
   .set('Authorization', token)
   .end((err, res) => {
     Hint.find({}, (errHint, hints) => {
@@ -125,7 +125,7 @@ function cannotDestroyIfNone (app, token, done) {
 
 function cannotDestroyWithBadToken (app, done) {
   chai.request(app)
-  .get('/destroyHint/hintTest')
+  .delete('/destroyHint/hintTest')
   .set('Authorization', 'badToken')
   .end((err, res) => {
     Hint.find({}, (errHint, hints) => {
@@ -140,7 +140,7 @@ function cannotDestroyWithBadToken (app, done) {
 function destroysWithNoTrace (app, token, done) {
   Hint.find({}, (errHint, hints) => {
     chai.request(app)
-    .get(`/destroyHint/${hints[0]._id.toString()}`)
+    .delete(`/destroyHint/${hints[0]._id.toString()}`)
     .set('Authorization', token)
     .end((err, res) => {
       Hint.find({}, (errUpdatedHint, updatedHints) => {
@@ -174,7 +174,7 @@ function noHintIfStageDestroyed (app, token, done) {
         .send({ stage: stages[0], text: 'testToBeDestroyed2' })
         .end((errThirdRequest, resThirdRequest) => {
           chai.request(app)
-          .get('/destroyStage/stageToBeDestroyedForHint')
+          .delete('/destroyStage/stageToBeDestroyedForHint')
           .set('Authorization', token)
           .end((err, res) => {
             Hint.find({}, (errHint, hints) => {
@@ -182,6 +182,114 @@ function noHintIfStageDestroyed (app, token, done) {
               hints.length.should.equal(0)
               res.should.have.status(200)
               done()
+            })
+          })
+        })
+      })
+    })
+  })
+}
+
+function cannotUpdateWithBadToken (app, token, done) {
+  chai.request(app)
+  .post('/createStage')
+  .set('Authorization', token)
+  .send({ name: 'stageToUsedForUpdateTests', content: 'test content', instructions: 'test instructions', answer: 'test answer' })
+  .end((errFirstRequest, resFirstRequest) => {
+    Stage.find({ name: 'stageToUsedForUpdateTests' }, (errStage, stages) => {
+      chai.request(app)
+      .post('/createHint')
+      .set('Authorization', token)
+      .send({ stage: stages[0], text: 'testToBeUpdated' })
+      .end((errSecondRequest, resSecondRequest) => {
+        Hint.find({ text: 'testToBeUpdated' }, (errHint, hints) => {
+          chai.request(app)
+          .put(`/updateHint/${hints[0].id}`)
+          .set('Authorization', 'badToken')
+          .send({ text: 'testToBeUpdatedAlreadyUpdated' })
+          .end((errThirdRequest, resThirdRequest) => {
+            Hint.find({ text: 'testToBeUpdatedAlreadyUpdated' }, (errUpdatedHint, updatedHints) => {
+              Stage.remove({}, (errDeleteAllStages, allStages) => {
+                Hint.remove({}, (errDeleteAllHints, allHints) => {
+                  hints.length.should.equal(1)
+                  updatedHints.length.should.equal(0)
+                  resThirdRequest.should.have.status(401)
+                  errThirdRequest.response.text.should.equal('Unauthorized')
+                  done()
+                })
+              })
+            })
+          })
+        })
+      })
+    })
+  })
+}
+
+function cannotUpdateWithBadId (app, token, done) {
+  chai.request(app)
+  .post('/createStage')
+  .set('Authorization', token)
+  .send({ name: 'stageToUsedForUpdateTests', content: 'test content', instructions: 'test instructions', answer: 'test answer' })
+  .end((errFirstRequest, resFirstRequest) => {
+    Stage.find({ name: 'stageToUsedForUpdateTests' }, (errStage, stages) => {
+      chai.request(app)
+      .post('/createHint')
+      .set('Authorization', token)
+      .send({ stage: stages[0], text: 'testToBeUpdated' })
+      .end((errSecondRequest, resSecondRequest) => {
+        Hint.find({ text: 'testToBeUpdated' }, (errHint, hints) => {
+          chai.request(app)
+          .put(`/updateHint/badId`)
+          .set('Authorization', token)
+          .send({ text: 'testToBeUpdatedAlreadyUpdated' })
+          .end((errThirdRequest, resThirdRequest) => {
+            Hint.find({ text: 'testToBeUpdatedAlreadyUpdated' }, (errUpdatedHint, updatedHints) => {
+              Stage.remove({}, (errDeleteAllStages, allStages) => {
+                Hint.remove({}, (errDeleteAllHints, allHints) => {
+                  hints.length.should.equal(1)
+                  updatedHints.length.should.equal(0)
+                  resThirdRequest.should.have.status(500)
+                  errThirdRequest.response.should.not.equal(null)
+                  done()
+                })
+              })
+            })
+          })
+        })
+      })
+    })
+  })
+}
+
+function updatesIfAllGood (app, token, done) {
+  chai.request(app)
+  .post('/createStage')
+  .set('Authorization', token)
+  .send({ name: 'stageToUsedForUpdateTests', content: 'test content', instructions: 'test instructions', answer: 'test answer' })
+  .end((errFirstRequest, resFirstRequest) => {
+    Stage.find({ name: 'stageToUsedForUpdateTests' }, (errStage, stages) => {
+      chai.request(app)
+      .post('/createHint')
+      .set('Authorization', token)
+      .send({ stage: stages[0], text: 'testToBeUpdated' })
+      .end((errSecondRequest, resSecondRequest) => {
+        Hint.find({ text: 'testToBeUpdated' }, (errHint, hints) => {
+          chai.request(app)
+          .put(`/updateHint/${hints[0].id}`)
+          .set('Authorization', token)
+          .send({ text: 'testToBeUpdatedAlreadyUpdated' })
+          .end((errThirdRequest, resThirdRequest) => {
+            Hint.find({ text: 'testToBeUpdatedAlreadyUpdated' }, (errUpdatedHint, updatedHints) => {
+              Stage.remove({}, (errDeleteAllStages, allStages) => {
+                Hint.remove({}, (errDeleteAllHints, allHints) => {
+                  hints.length.should.equal(1)
+                  updatedHints.length.should.equal(1)
+                  resThirdRequest.should.have.status(200)
+                  should.equal(errThirdRequest, null)
+                  done()
+                })
+              })
             })
           })
         })
@@ -201,4 +309,7 @@ export default {
   cannotDestroyWithBadToken,
   destroysWithNoTrace,
   noHintIfStageDestroyed,
+  cannotUpdateWithBadToken,
+  cannotUpdateWithBadId,
+  updatesIfAllGood,
 }
