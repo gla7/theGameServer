@@ -146,6 +146,33 @@ function goodTokenFromSignIn (app, token, done) {
   })
 }
 
+function updatesOnlyPermittedUserAttributes (app, token, done) {
+  User.findOne({ name: 'test' }, (errUser, user) => {
+    chai.request(app)
+    .put(`/updateUser/test`)
+    .send({ name: 'testUpdated', email: 'testUpdated@test.com', _id: '5a320879f0cc87e8b36fd348', averageTeamScore: 10000000 })
+    .set('Authorization', token)
+    .end((err, res) => {
+      chai.request(app)
+      .put(`/updateUser/testUpdated`)
+      .send({ name: 'test', email: 'test@test.com' })
+      .set('Authorization', token)
+      .end((errSecondRequest, resSecondRequest) => {
+        should.equal(errUser, null)
+        should.equal(err, null)
+        res.body.name.should.equal('testUpdated')
+        res.body.email.should.equal('testUpdated@test.com')
+        res.body._id.should.not.equal('5a320879f0cc87e8b36fd348')
+        res.body.averageTeamScore.should.not.equal(10000000)
+        res.body._id.toString().should.equal(user._id.toString())
+        res.body.averageTeamScore.should.equal(user.averageTeamScore)
+        res.should.have.status(200)
+        done()
+      })
+    })
+  })
+}
+
 export default {
   noTokenNoLogIn,
   badTokenNoLogIn,
@@ -158,4 +185,5 @@ export default {
   noSignInWithBadPassword,
   noSignInWithBadCreds,
   goodTokenFromSignIn,
+  updatesOnlyPermittedUserAttributes,
 }

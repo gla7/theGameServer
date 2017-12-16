@@ -86,6 +86,7 @@ describe('ALL TESTS:', () => {
     })
 
     it('Marks me logged with a token from sign in', done => { auth.goodTokenFromSignIn(app, token, done) })
+    it('Updates only permitted user attributes', done => { auth.updatesOnlyPermittedUserAttributes(app, token, done) })
   })
 
   describe('GAME TESTS:', () => {
