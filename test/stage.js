@@ -225,6 +225,64 @@ function cannotDestroyWithBadToken (app, done) {
   })
 }
 
+function cannotUpdateWithBadToken (app, token, done) {
+  chai.request(app)
+  .post('/createStage')
+  .set('Authorization', token)
+  .send({ name: 'stageTestForUpdate', content: 'test', instructions: 'test', answer: 'test' })
+  .end((err, res) => {
+    chai.request(app)
+    .put(`/updateStage/stageTestForUpdate`)
+    .set('Authorization', 'badToken')
+    .send({ name: 'stageTestUpdated', content: 'test content', instructions: 'test instructions', answer: 'test answer', author: '5a320879f0cc87e8b36fd3489999' })
+    .end((errSecondRequest, resSecondRequest) => {
+      resSecondRequest.should.have.status(401)
+      errSecondRequest.response.text.should.equal('Unauthorized')
+      done()
+    })
+  })
+}
+
+function cannotUpdateWithBadName (app, token, done) {
+  chai.request(app)
+  .put(`/updateStage/stageTestForUpdates`)
+  .set('Authorization', token)
+  .send({ name: 'stageTestUpdated', content: 'test content', instructions: 'test instructions', answer: 'test answer', author: '5a320879f0cc87e8b36fd3489999' })
+  .end((err, res) => {
+    res.should.have.status(200)
+    res.text.should.equal('No stages found under that name.')
+    done()
+  })
+}
+
+function updatesOnlyPermittedStageAttributes (app, token, done) {
+  Stage.findOne({ name: 'stageTestForUpdate' }, (errStage, stage) => {
+    chai.request(app)
+    .put(`/updateStage/stageTestForUpdate`)
+    .set('Authorization', token)
+    .send({ name: 'stageTestUpdated', content: 'test content', instructions: 'test instructions', answer: 'test answer', author: '5a320879f0cc87e8b36fd3489999' })
+    .end((err, res) => {
+      chai.request(app)
+      .delete('/destroyStage/stageTestUpdated')
+      .set('Authorization', token)
+      .end((errSecondRequest, resSecondRequest) => {
+        res.should.have.status(200)
+        res.body.name.should.not.equal(stage.name)
+        res.body.name.should.equal('stageTestUpdated')
+        res.body.content.should.not.equal(stage.content)
+        res.body.content.should.equal('test content')
+        res.body.instructions.should.not.equal(stage.instructions)
+        res.body.instructions.should.equal('test instructions')
+        res.body.answer.should.not.equal(stage.answer)
+        res.body.answer.should.equal('test answer')
+        res.body.author.toString().should.equal(stage.author.toString())
+        res.body.author.toString().should.not.equal('5a320879f0cc87e8b36fd3489999')
+        done()
+      })
+    })
+  })
+}
+
 function cannotReadWithBadToken (app, token, done) {
   chai.request(app)
   .post('/createStage')
@@ -287,6 +345,9 @@ export default {
   noGameRefIfGameDestroyed,
   cannotDestroyIfNone,
   cannotDestroyWithBadToken,
+  cannotUpdateWithBadToken,
+  cannotUpdateWithBadName,
+  updatesOnlyPermittedStageAttributes,
   cannotReadWithBadToken,
   cannotReadWithBadName,
   readsIfAllGood,

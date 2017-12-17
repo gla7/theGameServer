@@ -1,6 +1,8 @@
 import Stage from '../models/stage'
 import Game from '../models/game'
 
+const IMMUTABLE_PROPERTIES = ['_id', 'author']
+
 function read (req, res, next) {
   Stage.findOne({ name: req.params.name }, (err, stage) => {
     if (err) { return res.status(401).send(err.response) }
@@ -38,8 +40,20 @@ function create (req, res, next) {
 }
 
 function update (req, res, next) {
-  // TODO: build out this function
-  res.send('xD /updateStage ' + req.user + ', ' + JSON.stringify(req.body, null, 4))
+  Stage.findOne({ name: req.params.name }, (err, stage) => {
+    if (err) { return res.status(401).send(err.response) }
+    if (!stage) { return res.status(200).send('No stages found under that name.') }
+    if (req.user._id.toString() !== stage.author.toString()) { return res.send('You do not have the permission to do this!') }
+    IMMUTABLE_PROPERTIES.forEach(disallowedProp => {
+    	for (let _key in req.body) {
+    		delete req.body[disallowedProp]
+    	}
+    })
+    Stage.findOneAndUpdate({ _id: stage._id }, req.body, { new: true }, (errUpdatedStage, updatedStage) => {
+      if (err) { return res.status(500).send(err) }
+      res.send(updatedStage)
+    })
+  })
 }
 
 function destroy (req, res, next) {
