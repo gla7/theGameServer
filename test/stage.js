@@ -225,6 +225,55 @@ function cannotDestroyWithBadToken (app, done) {
   })
 }
 
+function cannotReadWithBadToken (app, token, done) {
+  chai.request(app)
+  .post('/createStage')
+  .set('Authorization', token)
+  .send({ name: 'stageTest', content: 'test content', instructions: 'test instructions', answer: 'test answer' })
+  .end((err, res) => {
+    chai.request(app)
+    .get(`/readStage/stageTest`)
+    .set('Authorization', 'badToken')
+    .end((errSecondRequest, resSecondRequest) => {
+      resSecondRequest.should.have.status(401)
+      errSecondRequest.response.text.should.equal('Unauthorized')
+      done()
+    })
+  })
+}
+
+function cannotReadWithBadName (app, token, done) {
+  chai.request(app)
+  .get(`/readStage/stageTests`)
+  .set('Authorization', token)
+  .end((err, res) => {
+    res.text.should.equal('No stages found under that name.')
+    res.should.have.status(200)
+    should.equal(err, null)
+    done()
+  })
+}
+
+function readsIfAllGood (app, token, done) {
+  Stage.findOne({ name: 'stageTest' }, (errStage, stage) => {
+    chai.request(app)
+    .get(`/readStage/stageTest`)
+    .set('Authorization', token)
+    .end((err, res) => {
+      chai.request(app)
+      .delete('/destroyStage/stageTest')
+      .set('Authorization', token)
+      .end((errSecondRequest, resSecondRequest) => {
+        res.body._id.toString().should.equal(stage._id.toString())
+        res.body.name.should.equal(stage.name)
+        resSecondRequest.should.have.status(200)
+        should.equal(errSecondRequest, null)
+        done()
+      })
+    })
+  })
+}
+
 export default {
   cannotCreateIfLoggedOut,
   cannotCreateWithBadToken,
@@ -238,4 +287,7 @@ export default {
   noGameRefIfGameDestroyed,
   cannotDestroyIfNone,
   cannotDestroyWithBadToken,
+  cannotReadWithBadToken,
+  cannotReadWithBadName,
+  readsIfAllGood,
 }

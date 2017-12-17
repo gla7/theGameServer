@@ -129,6 +129,55 @@ function destroysIfAllGood (app, token, done) {
   })
 }
 
+function cannotReadWithBadToken (app, token, done) {
+  chai.request(app)
+  .post('/createGame')
+  .set('Authorization', token)
+  .send({ name: 'gameTest' })
+  .end((err, res) => {
+    chai.request(app)
+    .get(`/readGame/gameTest`)
+    .set('Authorization', 'badToken')
+    .end((errSecondRequest, resSecondRequest) => {
+      resSecondRequest.should.have.status(401)
+      errSecondRequest.response.text.should.equal('Unauthorized')
+      done()
+    })
+  })
+}
+
+function cannotReadWithBadName (app, token, done) {
+  chai.request(app)
+  .get(`/readGame/gameTests`)
+  .set('Authorization', token)
+  .end((err, res) => {
+    res.text.should.equal('No games found under that name.')
+    res.should.have.status(200)
+    should.equal(err, null)
+    done()
+  })
+}
+
+function readsIfAllGood (app, token, done) {
+  Game.findOne({ name: 'gameTest' }, (errGame, game) => {
+    chai.request(app)
+    .get(`/readGame/gameTest`)
+    .set('Authorization', token)
+    .end((err, res) => {
+      chai.request(app)
+      .delete('/destroyGame/gameTest')
+      .set('Authorization', token)
+      .end((errSecondRequest, resSecondRequest) => {
+        res.body._id.toString().should.equal(game._id.toString())
+        res.body.name.should.equal(game.name)
+        resSecondRequest.should.have.status(200)
+        should.equal(errSecondRequest, null)
+        done()
+      })
+    })
+  })
+}
+
 export default {
   cannotCreateIfLoggedOut,
   cannotCreateWithBadToken,
@@ -138,4 +187,7 @@ export default {
   cannotDestroyIfNone,
   cannotDestroyWithBadToken,
   destroysIfAllGood,
+  cannotReadWithBadToken,
+  cannotReadWithBadName,
+  readsIfAllGood,
 }

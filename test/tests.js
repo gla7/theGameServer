@@ -101,6 +101,9 @@ describe('ALL TESTS:', () => {
     it('Cannot destroy if name does not exist', done => { game.cannotDestroyIfNone(app, token, done) })
     it('Cannot destroy with a bad token', done => { game.cannotDestroyWithBadToken(app, done) })
     it('Destroys if all is good, and reflects this in the author', done => { game.destroysIfAllGood(app, token, done) })
+    it('Cannot read with bad token', done => { game.cannotReadWithBadToken(app, token, done) })
+    it('Cannot read with bad name', done => { game.cannotReadWithBadName(app, token, done) })
+    it('Reads if all is good', done => { game.readsIfAllGood(app, token, done) })
   })
 
   describe('STAGE TESTS:', () => {
@@ -116,6 +119,9 @@ describe('ALL TESTS:', () => {
     it('Removes game ref if game is destroyed', done => { stage.noGameRefIfGameDestroyed(app, token, done) })
     it('Cannot destroy if name does not exist', done => { stage.cannotDestroyIfNone(app, token, done) })
     it('Cannot destroy with a bad token', done => { stage.cannotDestroyWithBadToken(app, done) })
+    it('Cannot read with bad token', done => { stage.cannotReadWithBadToken(app, token, done) })
+    it('Cannot read with bad name', done => { stage.cannotReadWithBadName(app, token, done) })
+    it('Reads if all is good', done => { stage.readsIfAllGood(app, token, done) })
   })
 
   describe('HINT TESTS:', () => {
