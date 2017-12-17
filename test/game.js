@@ -129,6 +129,60 @@ function destroysIfAllGood (app, token, done) {
   })
 }
 
+function cannotUpdateWithBadToken (app, token, done) {
+  chai.request(app)
+  .post('/createGame')
+  .set('Authorization', token)
+  .send({ name: 'gameTest' })
+  .end((err, res) => {
+    chai.request(app)
+    .put(`/updateGame/gameTest`)
+    .set('Authorization', 'badToken')
+    .send({ name: 'gameTestUpdated', averageCompletionTime: 99, author: '5a320879f0cc87e8b36fd3489999' })
+    .end((errSecondRequest, resSecondRequest) => {
+      resSecondRequest.should.have.status(401)
+      errSecondRequest.response.text.should.equal('Unauthorized')
+      done()
+    })
+  })
+}
+
+function cannotUpdateWithBadName (app, token, done) {
+  chai.request(app)
+  .put(`/updateGame/gameTests`)
+  .set('Authorization', token)
+  .send({ name: 'gameTestUpdated', averageCompletionTime: 99, author: '5a320879f0cc87e8b36fd3489999' })
+  .end((err, res) => {
+    res.should.have.status(200)
+    res.text.should.equal('No games found under that name.')
+    done()
+  })
+}
+
+function updatesOnlyPermittedGameAttributes (app, token, done) {
+  Game.findOne({ name: 'gameTest' }, (errGame, game) => {
+    chai.request(app)
+    .put(`/updateGame/gameTest`)
+    .set('Authorization', token)
+    .send({ name: 'gameTestUpdated', averageCompletionTime: 99, author: '5a320879f0cc87e8b36fd3489999' })
+    .end((err, res) => {
+      chai.request(app)
+      .delete('/destroyGame/gameTestUpdated')
+      .set('Authorization', token)
+      .end((errSecondRequest, resSecondRequest) => {
+        res.should.have.status(200)
+        res.body.name.should.not.equal(game.name)
+        res.body.name.should.equal('gameTestUpdated')
+        res.body.averageCompletionTime.should.equal(game.averageCompletionTime)
+        res.body.averageCompletionTime.should.not.equal(99)
+        res.body.author.toString().should.equal(game.author.toString())
+        res.body.author.toString().should.not.equal('5a320879f0cc87e8b36fd3489999')
+        done()
+      })
+    })
+  })
+}
+
 function cannotReadWithBadToken (app, token, done) {
   chai.request(app)
   .post('/createGame')
@@ -187,6 +241,9 @@ export default {
   cannotDestroyIfNone,
   cannotDestroyWithBadToken,
   destroysIfAllGood,
+  cannotUpdateWithBadToken,
+  cannotUpdateWithBadName,
+  updatesOnlyPermittedGameAttributes,
   cannotReadWithBadToken,
   cannotReadWithBadName,
   readsIfAllGood,

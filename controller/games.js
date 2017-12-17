@@ -1,5 +1,7 @@
 import Game from '../models/game'
 
+const IMMUTABLE_PROPERTIES = ['_id', 'author', 'averageCompletionTime']
+
 function read (req, res, next) {
   Game.findOne({ name: req.params.name }, (err, game) => {
     if (err) { return res.status(401).send(err.response) }
@@ -22,8 +24,20 @@ function create (req, res, next) {
 }
 
 function update (req, res, next) {
-  // TODO: build out this function
-  res.send('xD /updateGame ' + req.user + ', ' + JSON.stringify(req.body, null, 4))
+  Game.findOne({ name: req.params.name }, (err, game) => {
+    if (err) { return res.status(401).send(err.response) }
+    if (!game) { return res.status(200).send('No games found under that name.') }
+    if (req.user._id.toString() !== game.author.toString()) { return res.send('You do not have the permission to do this!') }
+    IMMUTABLE_PROPERTIES.forEach(disallowedProp => {
+    	for (let _key in req.body) {
+    		delete req.body[disallowedProp]
+    	}
+    })
+    Game.findOneAndUpdate({ _id: game._id }, req.body, { new: true }, (errUpdatedGame, updatedGame) => {
+      if (err) { return res.status(500).send(err) }
+      res.send(updatedGame)
+    })
+  })
 }
 
 function destroy (req, res, next) {
