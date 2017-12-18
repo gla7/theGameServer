@@ -17,7 +17,7 @@ function cannotCreateIfLoggedOut (app, token, done) {
   // test created 2 games, game1 with 3 stages stage1, stage2, and stage 3
   // and game2 with 2 stages stage4 and stage 5
   // stage2 has one hint, hint1, whilst stage5 has two, hint2 and hint3
-  // note also that stage1 has timeUntilOneTenthDeduction of 10s
+  // note also that stage3 has timeUntilOneTenthDeduction of 10s
   // and stage4 has percentageDeductionPerWrongAnswer of 20
   // hint3 has percentDeductionIfUsed of 30
   // view all this at any time by adding the following code:
@@ -57,7 +57,7 @@ function cannotCreateIfLoggedOut (app, token, done) {
                 chai.request(app)
                 .post('/createStage')
                 .set('Authorization', token)
-                .send({ name: 'stage1', content: 'test content', instructions: 'test instructions', answer: 'test answer 1', createdThroughGame: game1, timeUntilOneTenthDeduction: 10 })
+                .send({ name: 'stage1', content: 'test content', instructions: 'test instructions', answer: 'test answer 1', createdThroughGame: game1 })
                 .end((errThird, resThird) => {
                   chai.request(app)
                   .post('/createStage')
@@ -67,7 +67,7 @@ function cannotCreateIfLoggedOut (app, token, done) {
                     chai.request(app)
                     .post('/createStage')
                     .set('Authorization', token)
-                    .send({ name: 'stage3', content: 'test content', instructions: 'test instructions', answer: 'test answer 3', createdThroughGame: game1 })
+                    .send({ name: 'stage3', content: 'test content', instructions: 'test instructions', answer: 'test answer 3', createdThroughGame: game1, timeUntilOneTenthDeduction: 10 })
                     .end((errFifth, resFifth) => {
                       chai.request(app)
                       .post('/createStage')
@@ -140,12 +140,12 @@ function cannotCreateWithBadToken (app, done) {
         .post('/createGameInstance')
         .set('Authorization', 'badToken')
         .send({ game: game1, team: [test2._id, test3._id] })
-        .end((errEleventh, resEleventh) => {
+        .end((err, res) => {
           GameInstance.find({}, (errGameInstances, gameInstances) => {
             gameInstances.length.should.equal(0)
-            resEleventh.status.should.equal(401)
-            resEleventh.text.should.equal('Unauthorized')
-            errEleventh.should.not.equal(null)
+            res.status.should.equal(401)
+            res.text.should.equal('Unauthorized')
+            err.should.not.equal(null)
             done()
           })
         })
@@ -162,22 +162,17 @@ function cannotCreateWithBadGameId (app, token, done) {
         .post('/createGameInstance')
         .set('Authorization', token)
         .send({ game: `${game1}AndThenSome`, team: [test2._id, test3._id] })
-        .end((errEleventh, resEleventh) => {
+        .end((err, res) => {
           GameInstance.find({}, (errGameInstances, gameInstances) => {
             gameInstances.length.should.equal(0)
-            resEleventh.status.should.equal(500)
-            errEleventh.should.not.equal(null)
+            res.status.should.equal(500)
+            err.should.not.equal(null)
             done()
           })
         })
       })
     })
   })
-}
-
-function createsIfAllGoodToValidUsers (app, token, done) {
-  // TODO: build out this function
-  done()
 }
 
 function createsIfAllGood (app, token, done) {
@@ -188,13 +183,13 @@ function createsIfAllGood (app, token, done) {
         .post('/createGameInstance')
         .set('Authorization', token)
         .send({ game: game1, team: [test2._id, test3._id] })
-        .end((errEleventh, resEleventh) => {
+        .end((err, res) => {
           User.findOne({ name: 'test' }, (errTest1, test1) => {
             User.findOne({ name: 'test2' }, (errTest2, test2) => {
               User.findOne({ name: 'test3' }, (errTest3, test3) => {
                 GameInstance.find({}, (errGameInstances, gameInstances) => {
                   StageInstance.find({}, (errStageInstances, stageInstances) => {
-                    should.equal(errEleventh, null)
+                    should.equal(err, null)
                     gameInstances.length.should.equal(1)
                     gameInstances[0].conductor.toString().should.equal(test1._id.toString())
                     gameInstances[0].team.toString().should.include(test2._id.toString())
@@ -206,7 +201,7 @@ function createsIfAllGood (app, token, done) {
                     test2.gamesInProgress.toString().should.include(gameInstances[0]._id.toString())
                     test3.gamesInProgress.toString().should.include(gameInstances[0]._id.toString())
                     gameInstances[0].stages.length.should.equal(stageInstances.length)
-                    resEleventh.status.should.equal(200)
+                    res.status.should.equal(200)
                     done()
                   })
                 })
@@ -223,6 +218,5 @@ export default {
   cannotCreateIfLoggedOut,
   cannotCreateWithBadToken,
   cannotCreateWithBadGameId,
-  createsIfAllGoodToValidUsers,
   createsIfAllGood,
 }

@@ -155,24 +155,22 @@ describe('ALL TESTS:', () => {
     it('Cannot create without login', done => { gameInstance.cannotCreateIfLoggedOut(app, token, done) })
     it('Cannot create with a bad token', done => { gameInstance.cannotCreateWithBadToken(app, done) })
     it('Cannot create with a bad game id', done => { gameInstance.cannotCreateWithBadGameId(app, token, done) })
-    // TODO: build out the commented out test
-    // it('Creates if all is good, creates stageInstances and associations only to valid users', done => { gameInstance.createsIfAllGoodToValidUsers(app, token, done) })
     it('Creates if all is good, creates stageInstances and associations to users', done => { gameInstance.createsIfAllGood(app, token, done) })
   })
 
   describe('STAGEINSTANCE TESTS:', () => {
-    // TODO: build out the commented out tests
-    // it('Cannot update without login', done => { stageInstance.cannotUpdateIfLoggedOut(app, done) })
-    // it('Cannot update with a bad token', done => { stageInstance.cannotUpdateWithBadToken(app, done) })
-    // it('Cannot update with a bad id', done => { stageInstance.cannotUpdateWithBadId(app, token, done) })
-    // it('Cannot update if user is not conductor', done => { stageInstance.nonConductorCannotUpdate(app, done) })
-    // it('Cannot update if passing wrong sets of attributes', done => { stageInstance.cannotUpdateWithBadAttributes(app, token, done) })
-    // it('Updates hintsUsed and time', done => { stageInstance.updatesHintsUsedAndTime(app, token, done) })
-    // it('Updates finalized and time and return next stage instance', done => { stageInstance.updatesFinalizedAndTimeAndReturnsNextStageInstance(app, token, done) })
-    // it('Updates finalized and time and return game instance', done => { stageInstance.updatesFinalizedAndTimeAndReturnsGameInstance(app, token, done) })
-    // it('Updates answers and time for wrong answers', done => { stageInstance.updatesAnswersAndTimeForWrongAnswers(app, token, done) })
-    // it('Updates answers and time for right answers and returns next', done => { stageInstance.updatesAnswersAndTimeForRightAnswersReturnsNext(app, token, done) })
-    // it('Updates answers and time for right answers and returns game instance', done => { stageInstance.updatesAnswersAndTimeForRightAnswersReturnsGameInstance(app, token, done) })
+    it('Cannot update without login', done => { stageInstance.cannotUpdateIfLoggedOut(app, done) })
+    it('Cannot update with a bad token', done => { stageInstance.cannotUpdateWithBadToken(app, done) })
+    it('Cannot update with a bad id', done => { stageInstance.cannotUpdateWithBadId(app, token, done) })
+    it('Cannot update if user is not conductor', done => { stageInstance.nonConductorCannotUpdate(app, done) })
+    it('Cannot update if passing wrong sets of attributes', done => { stageInstance.cannotUpdateWithBadAttributes(app, token, done) })
+    it('Updates finalized and time and return next stage instance', done => { stageInstance.updatesFinalizedAndTimeAndReturnsNextStageInstance(app, token, done) })
+    it('Updates hintsUsed and time', done => { stageInstance.updatesHintsUsedAndTime(app, token, done) })
+    it('Updates answers and time for wrong answers', done => { stageInstance.updatesAnswersAndTimeForWrongAnswers(app, token, done) })
+    it('Updates answers and time for right answers and returns next', done => { stageInstance.updatesAnswersAndTimeForRightAnswersReturnsNext(app, token, done) })
+    it('Updates answers and time for right answers and returns game instance', done => { stageInstance.updatesAnswersAndTimeForRightAnswersReturnsGameInstance(app, token, done) })
+    it('Updates answers and time with deduction for wrong answer', done => { stageInstance.updatesWithDeductionForWrongAnswer(app, token, done) })
+    it('Updates answers and time with deduction for hints used', done => { stageInstance.updatesWithDeductionForHintUsed(app, token, done) })
   })
 
   describe('DB TESTS:', () => {

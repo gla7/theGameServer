@@ -80,8 +80,9 @@ function calculateScoreAndGoToNextStageOrEndGameInstance (stage, stageInstance, 
     if (stageInstance.hintsUsed.length > 0) {
       Hint.find({ $or: stageInstance.hintsUsed.map(hint => { return { _id: hint } }) }, (errHints, hints) => {
         if (errHints) { return next(errHints) }
-        const totalPercentageDeductionForHintsUsed = hints.reduce((hint, totalPercentageDeductionFromHints) => {
-          return ((hint.percentDeductionIfUsed * 0.01) + totalPercentageDeductionFromHints)
+        let totalPercentageDeductionForHintsUsed = 0
+        hints.map(hint => {
+          totalPercentageDeductionForHintsUsed += hint.percentDeductionIfUsed * 0.01
         })
         const totalDeductionForHintsUsed = (totalValueOfStage * totalPercentageDeductionForHintsUsed)
         const stageFinalScore = (totalValueOfStage - totalDeductionForWrongAnswers - totalDeductionForTimeTaken - totalDeductionForHintsUsed < 0) ? 0 : totalValueOfStage - totalDeductionForWrongAnswers - totalDeductionForTimeTaken - totalDeductionForHintsUsed
