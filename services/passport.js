@@ -1,5 +1,5 @@
 import passport from 'passport'
-import Team from '../models/team'
+import User from '../models/user'
 import config from '../config'
 import passportJwt from 'passport-jwt'
 import LocalStrategy from 'passport-local'
@@ -9,15 +9,15 @@ const ExtractJwt = passportJwt.ExtractJwt
 
 // create local Strategy for logging in
 const localLogin = new LocalStrategy({ usernameField: 'name' }, (name, password, done) => {
-  // verify team name and pw, call done w/team if correct name and pw, else call done w/false
-  Team.findOne({ name: name }, (err, team) => {
+  // verify user name and pw, call done w/user if correct name and pw, else call done w/false
+  User.findOne({ name: name }, (err, user) => {
     if (err) { return done(err) }
-    if (!team) { return done(null, false) }
+    if (!user) { return done(null, false) }
     // compare pw's
-    team.comparePassword(password, (err, isMatch) => {
-      if (err) { return done(err) }
+    user.comparePassword(password, (errUser, isMatch) => {
+      if (errUser) { return done(errUser) }
       if (!isMatch) { return done(null, false) }
-      return done(null, team)
+      return done(null, user)
     })
   })
 })
@@ -32,12 +32,12 @@ const jwtOptions = {
 const jwtLogin = new JwtStrategy(jwtOptions, (payload, done) => {
   // payload is token together with sub and iat, done is a function, where it finds the token is specified in the jwtOptions
   // see if user id in the payload exists in our db
-  // if it does, call done with that team
-  // otherwise call done without team object
-  Team.findById(payload.sub, (err, team) => {
+  // if it does, call done with that user
+  // otherwise call done without user object
+  User.findById(payload.sub, (err, user) => {
     if (err) { return done(err, false) }
-    if (team) {
-      done(null, team)
+    if (user) {
+      done(null, user)
     } else {
       done(null, false)
     }

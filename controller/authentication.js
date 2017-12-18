@@ -2,43 +2,43 @@
 import jwt from 'jwt-simple'
 import config from '../config'
 import passportService from '../services/passport'
-import Team from '../models/team'
+import User from '../models/user'
 
 function loggedIn (req, res) {
-  res.send('You are logged in!!!')
+  res.send('You are logged in!!!' + req.user)
 }
 
 // jwt token setup
-function tokenForTeam  (team) {
+function tokenForUser  (user) {
   const timeStamp = new Date().getTime()
   // JWT conventions = sub: subject- who is the token about?, iat: issued at time
-  return jwt.encode({ sub: team.id, iat: timeStamp }, config.secret)
+  return jwt.encode({ sub: user.id, iat: timeStamp }, config.secret)
 }
 
-function createTeam (req, res, next) {
-  if (!req.body.name || !req.body.password) { return res.status(422).send({ error: 'You must provide team name and password!' }) }
-  Team.findOne({ name: req.body.name }, (err, team) => {
+function createUser (req, res, next) {
+  if (!req.body.name || !req.body.password || !req.body.email) { return res.status(422).send({ error: 'You must provide user name, email, and password!' }) }
+  User.findOne({ name: req.body.name }, (err, user) => {
     if (err) {
       return next(err)
     }
-    if (team) {
-      return res.status(422).send({ error: 'This team name already exists!' })
+    if (user) {
+      return res.status(422).send({ error: 'This user name already exists!' })
     }
-    const newTeam = new Team(req.body)
-    newTeam.save((err, team) => {
-      if (err) { return next(err) }
-      res.json({ token: tokenForTeam(team) })
+    const newUser = new User(req.body)
+    newUser.save((errUser, user) => {
+      if (errUser) { return next(errUser) }
+      res.json({ token: tokenForUser(user) })
     })
   })
 }
 
 function signIn (req, res, next) {
-  // team has already had its team name and pw authed, need to give em a token
-  res.send({ token: tokenForTeam(req.user) })
+  // user has already had its user name and pw authed, need to give em a token
+  res.send({ token: tokenForUser(req.user) })
 }
 
 export default {
   loggedIn,
-  createTeam,
+  createUser,
   signIn,
 }
