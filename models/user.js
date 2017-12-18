@@ -5,7 +5,7 @@ const UserSchema = mongoose.Schema({
 	name: { type: String, unique: true, required: true },
   email: { type: String, unique:true, required: true },
   password: { type: String, required : true },
-  averageTeamScore: { type: Number, default: 0 },
+  scores: [{ type: Number }],
   gamesCreated: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Games' }],
   stagesCreated: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Stages' }],
   gamesInProgress: [{ type: mongoose.Schema.Types.ObjectId, ref: 'GameInstances' }],

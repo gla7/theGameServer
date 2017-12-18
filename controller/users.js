@@ -1,6 +1,6 @@
 import User from '../models/user'
 
-const IMMUTABLE_PROPERTIES = ['_id', 'password', 'averageTeamScore', 'gamesCreated', 'stagesCreated', 'gamesInProgress', 'gamesFinished']
+const IMMUTABLE_PROPERTIES = ['_id', 'password', 'scores', 'gamesCreated', 'stagesCreated', 'gamesInProgress', 'gamesFinished']
 
 function read (req, res, next) {
   User.findOne({ name: req.params.name }, (err, user) => {

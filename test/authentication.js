@@ -150,7 +150,7 @@ function updatesOnlyPermittedUserAttributes (app, token, done) {
   User.findOne({ name: 'test' }, (errUser, user) => {
     chai.request(app)
     .put(`/updateUser/test`)
-    .send({ name: 'testUpdated', email: 'testUpdated@test.com', _id: '5a320879f0cc87e8b36fd348', averageTeamScore: 10000000 })
+    .send({ name: 'testUpdated', email: 'testUpdated@test.com', _id: '5a320879f0cc87e8b36fd348', scores: [10000000] })
     .set('Authorization', token)
     .end((err, res) => {
       chai.request(app)
@@ -163,9 +163,9 @@ function updatesOnlyPermittedUserAttributes (app, token, done) {
         res.body.name.should.equal('testUpdated')
         res.body.email.should.equal('testUpdated@test.com')
         res.body._id.should.not.equal('5a320879f0cc87e8b36fd348')
-        res.body.averageTeamScore.should.not.equal(10000000)
+        res.body.scores.should.not.equal([10000000])
         res.body._id.toString().should.equal(user._id.toString())
-        res.body.averageTeamScore.should.equal(user.averageTeamScore)
+        res.body.scores.toString().should.equal(user.scores.toString())
         res.should.have.status(200)
         done()
       })
