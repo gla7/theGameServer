@@ -1,5 +1,6 @@
 import Stage from '../models/stage'
 import Game from '../models/game'
+import helpers from './helpers'
 
 const IMMUTABLE_PROPERTIES = ['_id', 'author']
 
@@ -72,9 +73,14 @@ function destroy (req, res, next) {
   })
 }
 
+function search (req, res, next) {
+  return helpers.search(Stage, ['name', 'content'], req, res, next)
+}
+
 export default {
   read,
   create,
   update,
   destroy,
+  search,
 }

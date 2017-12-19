@@ -1,4 +1,5 @@
 import Game from '../models/game'
+import helpers from './helpers'
 
 const IMMUTABLE_PROPERTIES = ['_id', 'author', 'averageCompletionTime']
 
@@ -56,9 +57,14 @@ function destroy (req, res, next) {
   })
 }
 
+function search (req, res, next) {
+  return helpers.search(Game, ['name', 'description'], req, res, next)
+}
+
 export default {
   read,
   create,
   update,
   destroy,
+  search,
 }

@@ -25,9 +25,12 @@ export default function (app) {
   app.get('/readUser/:name', requireAuth, users.read)
   // POSTs
   app.post('/createUser', authentication.createUser)
+  app.post('/searchUsers', requireAuth, users.search)
   app.post('/signIn', requireSignIn, authentication.signIn)
   app.post('/createGame', requireAuth, games.create)
+  app.post('/searchGames', requireAuth, games.search)
   app.post('/createStage', requireAuth, stages.create)
+  app.post('/searchStages', requireAuth, stages.search)
   app.post('/createGameInstance', requireAuth, gameInstances.create)
   app.post('/createStageInstance', requireAuth, stageInstances.create)
   app.post('/createHint', requireAuth, hints.create)

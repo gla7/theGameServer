@@ -1,4 +1,5 @@
 import User from '../models/user'
+import helpers from './helpers'
 
 const IMMUTABLE_PROPERTIES = ['_id', 'password', 'scores', 'gamesCreated', 'stagesCreated', 'gamesInProgress', 'gamesFinished']
 
@@ -31,8 +32,13 @@ function destroy (req, res, next) {
   res.send('xD /destroyUser ' + req.user + ', ' + JSON.stringify(req.params, null, 4))
 }
 
+function search (req, res, next) {
+  return helpers.search(User, ['name', 'email'], req, res, next)
+}
+
 export default {
   read,
   update,
   destroy,
+  search,
 }
