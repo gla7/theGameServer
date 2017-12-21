@@ -19,8 +19,9 @@ export default function (app) {
   app.get('/loggedIn', requireAuth, authentication.loggedIn)
   app.get('/readGame/:name', requireAuth, games.read)
   app.get('/readStage/:name', requireAuth, stages.read)
+  // TODO: need to pass all reads to being by id, screwed up on that one!
+  app.get('/readStageById/:id', requireAuth, stages.readById)
   app.get('/readGameInstance/:id', requireAuth, gameInstances.read)
-  app.get('/readStageInstance/:id', requireAuth, stageInstances.read)
   app.get('/readHint/:id', requireAuth, hints.read)
   app.get('/readUser/:name', requireAuth, users.read)
   // POSTs
@@ -33,6 +34,7 @@ export default function (app) {
   app.post('/searchStages', requireAuth, stages.search)
   app.post('/createGameInstance', requireAuth, gameInstances.create)
   app.post('/createStageInstance', requireAuth, stageInstances.create)
+  app.post('/readStageInstance', requireAuth, stageInstances.read)
   app.post('/createHint', requireAuth, hints.create)
   // DELETEs
   app.delete('/destroyGame/:name', requireAuth, games.destroy)

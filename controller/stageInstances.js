@@ -4,9 +4,13 @@ import Stage from '../models/stage'
 import Hint from '../models/hint'
 import User from '../models/user'
 
+// TODO: think about how to make this not a post
 function read (req, res, next) {
-  // TODO: build out this function
-  res.send('xD /readStageInstance ' + req.user + ', ' + JSON.stringify(req.params, null, 4))
+  StageInstance.findOne({ stage: req.body.stage, gameInstance: req.body.gameInstance }, (err, stageInstance) => {
+    if (err) { return res.status(401).send(err.response) }
+    if (!stageInstance) { return res.status(200).send('No stage instances found under that id.') }
+    res.send(stageInstance)
+  })
 }
 
 function create (req, res, next) {

@@ -12,6 +12,17 @@ function read (req, res, next) {
   })
 }
 
+// TODO: need to pass all reads to being by id, screwed up on that one!
+function readById (req, res, next) {
+  Stage.findOne({ _id: req.params.id }, (err, stage) => {
+    if (err) { return res.status(401).send(err.response) }
+    if (!stage) { return res.status(200).send('No stages found under that id.') }
+    const stageCopy = JSON.parse(JSON.stringify(stage))
+    delete stageCopy['answer']
+    res.send(stageCopy)
+  })
+}
+
 function create (req, res, next) {
   Stage.findOne({ name: req.body.name }, (err, stage) => {
     if (err) { return next(err) }
@@ -79,6 +90,7 @@ function search (req, res, next) {
 
 export default {
   read,
+  readById,
   create,
   update,
   destroy,
