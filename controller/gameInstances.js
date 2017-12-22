@@ -2,8 +2,11 @@ import GameInstance from '../models/gameInstance'
 import Game from '../models/game'
 
 function read (req, res, next) {
-  // TODO: build out this function
-  res.send('xD /readGameInstance ' + req.user + ', ' + JSON.stringify(req.params, null, 4))
+  GameInstance.findOne({ _id: req.params.id }, (err, gameInstance) => {
+    if (err) { return res.status(401).send(err.response) }
+    if (!gameInstance) { return res.status(200).send('No game instances found under that id.') }
+    res.send(gameInstance)
+  })
 }
 
 function create (req, res, next) {
